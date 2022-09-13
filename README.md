@@ -9,7 +9,6 @@ The app uses the [API](https://api.goclimate.com/docs) provided by [GoClimate](h
 Through a form, the user is able to enter origin and destination of the flight, choose the cabin class and the number of passengers of that flight.</br>
 In a paragraph the submitted information will be displayed followed by the carbon footprint.
 
-
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
@@ -21,3 +20,8 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 ## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+
+## Links
+
+You can try the app [here](https://flight-footprint-calculator.web.app/)!
