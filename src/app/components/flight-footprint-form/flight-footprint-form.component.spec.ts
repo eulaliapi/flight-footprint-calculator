@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FormsModule } from '@angular/forms';
 
 import { FlightFootprintFormComponent } from './flight-footprint-form.component';
 
@@ -8,7 +10,8 @@ describe('FlightFootprintFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FlightFootprintFormComponent ]
+      declarations: [ FlightFootprintFormComponent ],
+      imports: [HttpClientTestingModule,FormsModule],
     })
     .compileComponents();
   });
