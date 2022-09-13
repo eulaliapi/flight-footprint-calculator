@@ -1,0 +1,10 @@
+.container {
+    margin: 0.5em;
+}
+
+@media screen and (min-width: 48em) {
+    .container {
+        display: flex;
+        justify-content: space-around;
+    }
+}

@@ -1,0 +1,132 @@
+.column {
+    display: flex;
+    justify-content: center;
+    margin: 0.5em 0;
+    padding: 1em 0.5em;
+}
+
+ul {
+    list-style: none;
+}
+
+.form {
+    border: 1px solid var(--clr-primary-800);
+    border-radius: 1.2em;
+    padding: 1em 1.5em;
+}
+
+.field {
+    margin-bottom: 1em;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5em;
+    font-weight: var(--fw-semi-bold);
+}
+
+.form-input {
+    border: 1px solid var(--clr-primary-700);
+    border-radius: 5px;
+    padding: 2px;
+    color: var(--clr-primary-700);
+    width: var(--input-width-sm);
+}
+
+.form-input:focus-visible {
+    outline-color: var(--clr-primary-300);
+}
+
+.list {
+    position: absolute;
+    width: var(--input-width-sm);
+    max-height: 6.8em;
+    overflow-y: auto;
+    margin-top: 1px;
+    padding: 0.2em 0.5em;
+    border: 1px solid var(--clr-primary-700);
+    border-radius: 0.2em;
+    background-color: var(--clr-primary-100);
+}
+
+.origin {
+    z-index:100;
+}
+
+.list-item {
+    cursor: pointer;
+    text-overflow: ellipsis;
+    white-space: nowrap; 
+    overflow: hidden;
+}
+
+.list-item:not(:last-of-type) {
+    border-bottom: 1px solid var(--clr-primary-600);
+}
+
+.list-item:hover {
+    font-weight: var(--fw-semi-bold);
+}
+
+.button-container {
+    display:flex;
+    justify-content: center;
+}
+
+.button {
+    cursor: pointer;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 3rem;
+    background-color: var(--clr-primary-700);
+    color: var(--clr-primary-200);
+}
+
+.button:hover {
+    background-color: var(--clr-primary-400);
+}
+
+.button:disabled {
+    cursor: default;
+    background-color: var(--clr-primary-300);
+    color: var(--clr-primary-100)
+}
+
+@media screen and (min-width: 35em) and (max-width:48em) {
+    
+    .field {
+        margin-bottom: 1.2em;
+    }
+
+    .form-input {
+        padding: 5px;
+        color: var(--clr-primary-700);
+        width: var(--input-width-md);
+    }
+
+    .list {
+        width: var(--input-width-md);
+    }
+}
+
+@media screen and (min-width: 48em) {
+
+    .column {
+        display: inline-flex;
+        margin: 2em 0;
+    }
+
+    .field {
+        margin-bottom: 1.5em;
+    }
+
+    .form-input {
+        padding: 6px;
+        color: var(--clr-primary-700);
+        width: var(--input-width-lg);
+    }
+
+    .list {
+        width: var(--input-width-lg);
+    }
+}

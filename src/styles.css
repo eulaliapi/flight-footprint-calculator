@@ -1,1 +1,56 @@
 /* You can add global styles to this file, and also import other style files */
+:root {
+    --clr-primary-100: #d1e7dd;
+    --clr-primary-200: #a3cfbb;
+    --clr-primary-300: #75b798;
+    --clr-primary-400: #479f76;
+    --clr-primary-500: #198754;
+    --clr-primary-600: #146c43;
+    --clr-primary-700: #0f5132;
+    --clr-primary-800: #0a3622;
+    --clr-primary-900: #051b11;
+
+    --ff-primary: 'Be Vietnam Pro', sans-serif;
+    --fw-regular: 400;
+    --fw-semi-bold: 700;
+    --fw-bold: 900;
+
+    --fs-300: 0.75rem;
+    --fs-400: 1rem;
+    --fs-500: 1.5em;
+    --fs-600: 2rem;
+
+    --input-width-sm: 15.625em;
+    --input-width-md: 18em;
+    --input-width-lg: 20em;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font: inherit;
+}
+
+html:focus-within {
+    scroll-behavior: smooth;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    background-color: var(--clr-primary-200);
+    color: var(--clr-primary-700);
+    font-family: var(--ff-primary);
+    font-size: var(--fs-400);
+    font-weight: var(--fw-regular);
+}
+

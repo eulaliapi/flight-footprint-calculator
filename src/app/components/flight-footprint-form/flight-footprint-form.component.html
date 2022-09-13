@@ -1,0 +1,65 @@
+ <!--form-->
+ <section class="column">
+    <form class="form" (ngSubmit)="onSubmit(flightFootprintForm)" #flightFootprintForm="ngForm">
+
+      <!--origin-->
+      <div class="field">
+        <label for="origin" class="form-label">From</label>
+        <input type="text" class="form-input" name="origin" id="origin"
+          #originInput
+          (input)="onOriginInput(originInput.value)"
+          required ngModel>
+
+        <ul *ngIf="showOriginMatch"  class="list origin" id="origin-list">
+
+            <li *ngFor="let matchingOrigin of matchingOriginAirports" class="list-item" 
+            #selectedOrigin (click)="onSelectedOrigin(selectedOrigin); selectedOriginObj(matchingOrigin)">
+            {{matchingOrigin.city}}, {{matchingOrigin.name}} ({{matchingOrigin.code}})
+            </li>
+
+            <li *ngIf="noResultsOrigin">No results found :(</li>
+
+          </ul>
+
+      </div>
+
+      <!--destination-->
+      <div class="field">
+        <label for="destination" class="form-label">To</label>
+        <input type="text" class="form-input" name="destination" id="destination"
+          #destinationInput
+          (input)="onDestinationInput(destinationInput.value)"
+          required ngModel>
+
+        <ul *ngIf="showDestinationMatch" class="list destination" id="origin-list">
+
+          <li *ngFor="let matchingDestination of matchingDestinationAirports" class="list-item" 
+            #selectedDestination (click)="onSelectedDestination(selectedDestination); selectedDestinationObj(matchingDestination)">
+            {{matchingDestination.city}}, {{matchingDestination.name}} ({{matchingDestination.code}})
+            </li>
+
+          <li *ngIf="noResultsDestination">No results found :(</li>
+
+        </ul>
+      </div>
+
+      <!--cabin class-->
+      <div class="field">
+        <label for="cabin_class" class="form-label">Cabin class</label>
+        <select class="form-input" name="cabin_class" id="cabin_class" required ngModel>
+          <option *ngFor="let cabin_class of cabin_class_options" [value]="cabin_class" >{{cabin_class}}</option>
+        </select>
+      </div>
+
+      <!--tickets-->
+      <div class="field">
+        <label for="tickets" class="form-label">N° tickets</label>
+        <input type="number" class="form-input" name="tickets" id="tickets" min="1" required ngModel>
+      </div>
+      <!--submit button-->
+      <div class="button-container">
+        <button class="button" type="submit" [disabled]="!flightFootprintForm.form.valid">Go</button>
+      </div>
+
+    </form>
+  </section>

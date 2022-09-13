@@ -1,0 +1,40 @@
+.footer {
+    border-top: 1px solid var(--clr-primary-800);
+    padding: 0.5rem 0;
+}
+
+.footer-container {
+    font-size: var(--fs-300);
+}
+
+.footer-item {
+    margin: 0.5em 0;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.link {
+    color: var(--clr-primary-500);
+    font-weight: var(--fw-semi-bold);
+}
+
+.link:visited {
+    color: var(--clr-primary-700);
+}
+
+.link:hover {
+    color: var(--clr-primary-800)
+}
+
+@media screen and (min-width: 48em) {
+    .footer-container {
+        display: flex;
+        justify-content: space-evenly;
+    }
+    
+    .footer-item {
+        margin: 0.8em 1em;
+    }
+}

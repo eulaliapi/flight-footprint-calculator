@@ -1,0 +1,57 @@
+<!--details-->
+<section class="column">
+
+    <!--presentation card-->
+    <div *ngIf="!flightInfosInput" class="info">
+        <div class="card-item">
+          <p class="block-text">Enter the details of the flight and find out the emissions caused.</p>
+        </div>
+      </div>
+
+    <!--details container-->
+    <div *ngIf="flightInfosInput" class="info">
+        <!--departure and arrival-->
+        <div class="info-item">
+            <!--departure-->
+            <p>
+                <span class="block-text">From</span>
+                <span class="block-text text-semibold">{{flightInfosInput.originObject.city}}, {{flightInfosInput.originObject.name}} ({{flightInfosInput.originObject.code}})</span>
+            </p>
+            <!--arrow icon-->
+            <div class="arrow-center">
+                <i class="bi bi-arrow-right text-semibold"></i>
+            </div>
+            <!--arrival-->
+            <p>
+                <span class="block-text">To</span>
+                <span class="block-text text-semibold">{{flightInfosInput.destinationObject.city}}, {{flightInfosInput.destinationObject.name}} ({{flightInfosInput.destinationObject.code}})</span>
+            </p>
+        </div>
+
+        <!--cabin-->
+        <div class="info-item">
+            <p class="text-center">
+                <span class="text-semibold">{{flightInfosInput.cabin_class}} </span>
+                <span>class flight</span>
+            </p>
+        </div>
+
+        <!--footprint info-->
+        <div class="info-item">
+
+            <!--single ticket-->
+            <p class="text-center footprint">
+                <span class="text-semibold">{{singleTicketFootprint}} tonnes CO2e </span>
+                <span>per ticket</span>
+            </p>
+
+            <!-- n tickets -->
+            <div class="text-center footprint">
+                <p class="text-semibold">Total ({{flightInfosInput.tickets}} tickets)</p>
+                <p class="">{{totalTicketsFootprint}} tonnes CO2e</p>
+            </div>
+
+        </div>
+
+    </div>
+</section>
