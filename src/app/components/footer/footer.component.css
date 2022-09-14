@@ -1,6 +1,7 @@
 .footer {
     border-top: 1px solid var(--clr-primary-800);
     padding: 0.5rem 0;
+    
 }
 
 .footer-container {
@@ -29,6 +30,13 @@
 }
 
 @media screen and (min-width: 48em) {
+    
+    .footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+    }
+
     .footer-container {
         display: flex;
         justify-content: space-evenly;
