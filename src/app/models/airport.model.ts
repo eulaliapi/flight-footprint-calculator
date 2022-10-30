@@ -5,6 +5,7 @@ export interface Airport {
     lon: string;
     name: string;
     city: string;
+    state: string;
     country: string;
     woeid: string;
     tz: string;

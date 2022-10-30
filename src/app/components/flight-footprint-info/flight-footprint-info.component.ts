@@ -34,7 +34,6 @@ export class FlightFootprintInfoComponent implements OnInit, OnChanges {
         error: err => console.log(err)
       })
     }
-    //capire come funziona il catch errori
   }
 
   //calculates the footprint according to our choices

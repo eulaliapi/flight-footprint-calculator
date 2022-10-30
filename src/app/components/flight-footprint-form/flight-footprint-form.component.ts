@@ -120,8 +120,13 @@ export class FlightFootprintFormComponent implements OnInit {
 
   onSubmit(form: NgForm) {
     let filledForm = new FlightForm(this.selectedOriginAirport, this.selectedDestinationAirport, form.value.cabin_class, form.value.tickets);
-    this.newForm.emit(filledForm);
-    form.reset();
+    if(filledForm.originObject !== undefined && filledForm.destinationObject !== undefined) {
+      this.newForm.emit(filledForm);
+      form.reset();
+    } else {
+      form.form.disabled;
+    }
+    
   }
 
 }

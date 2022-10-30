@@ -4,9 +4,9 @@
     <!--presentation card-->
     <div *ngIf="!flightInfosInput" class="info">
         <div class="card-item">
-          <p class="block-text">Enter the details of the flight and find out the emissions caused.</p>
+          <p class="block-text">Enter the details of the flight and find out its emissions.</p>
         </div>
-      </div>
+    </div>
 
     <!--details container-->
     <div *ngIf="flightInfosInput" class="info">
@@ -48,7 +48,7 @@
             <!-- n tickets -->
             <div class="text-center footprint">
                 <p class="text-semibold">Total ({{flightInfosInput.tickets}} tickets)</p>
-                <p class="">{{totalTicketsFootprint}} tonnes CO2e</p>
+                <p>{{totalTicketsFootprint}} tonnes CO2e</p>
             </div>
 
         </div>

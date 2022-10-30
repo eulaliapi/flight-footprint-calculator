@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Observable, throwError } from 'rxjs';
-import { catchError, map, retry } from 'rxjs/operators';
+import { catchError, map, retry, tap } from 'rxjs/operators';
 
 import { Airport } from '../models/airport.model';
 import { Footprint } from '../models/footprint.model';

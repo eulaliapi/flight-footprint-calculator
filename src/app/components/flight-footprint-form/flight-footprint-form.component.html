@@ -19,7 +19,7 @@
 
             <li *ngIf="noResultsOrigin">No results found :(</li>
 
-          </ul>
+        </ul>
 
       </div>
 
@@ -29,9 +29,10 @@
         <input type="text" class="form-input" name="destination" id="destination"
           #destinationInput
           (input)="onDestinationInput(destinationInput.value)"
-          required ngModel>
+          
+          required ngModel >
 
-        <ul *ngIf="showDestinationMatch" class="list destination" id="origin-list">
+        <ul *ngIf="showDestinationMatch" class="list destination" id="destination-list">
 
           <li *ngFor="let matchingDestination of matchingDestinationAirports" class="list-item" 
             #selectedDestination (click)="onSelectedDestination(selectedDestination); selectedDestinationObj(matchingDestination)">
