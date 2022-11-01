@@ -1,8 +1,8 @@
 .column {
     display: flex;
     justify-content: center;
-    margin: 0.5em 0;
-    padding: 1em 0.5em;
+    margin-top: 0.5em;
+    padding: 0.2em;
 }
 
 ul {
@@ -82,6 +82,10 @@ ul {
     color: var(--clr-primary-200);
 }
 
+.invalid-input {
+    font-size: var(--fs-250);
+}
+
 .button:hover {
     background-color: var(--clr-primary-400);
 }
@@ -107,6 +111,10 @@ ul {
     .list {
         width: var(--input-width-md);
     }
+
+    .invalid-input {
+        font-size: var(--fs-300);
+    }
 }
 
 @media screen and (min-width: 48em) {
@@ -128,5 +136,9 @@ ul {
 
     .list {
         width: var(--input-width-lg);
+    }
+
+    .invalid-input {
+        font-size: var(--fs-300);
     }
 }

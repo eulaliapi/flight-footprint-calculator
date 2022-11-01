@@ -1,66 +1,61 @@
  <!--form-->
  <section class="column">
-    <form class="form" (ngSubmit)="onSubmit(flightFootprintForm)" #flightFootprintForm="ngForm">
+  <form class="form" [formGroup]="flightForm" (ngSubmit)="onSubmit()">
 
-      <!--origin-->
-      <div class="field">
-        <label for="origin" class="form-label">From</label>
-        <input type="text" class="form-input" name="origin" id="origin"
-          #originInput
-          (input)="onOriginInput(originInput.value)"
-          required ngModel>
+    <!--origin-->
+    <div class="field">
+      <label for="origin" class="form-label">From</label>
+      <input class="form-input" type="text" name="origin" id="origin" formControlName = "origin"
+      #originInput 
+      (input)="onOriginInput(originInput.value)" required>
+      <p *ngIf="flightForm.get('origin')?.invalid && flightForm.get('origin')?.dirty && !showOriginMatch" class="invalid-input">Invalid input. Please select an option from the list.</p>
 
-        <ul *ngIf="showOriginMatch"  class="list origin" id="origin-list">
+      <ul *ngIf = "showOriginMatch"  class="list origin" id="origin-list">
+        <li *ngFor="let matchingOrigin of matchingOriginAirports" class="list-item"
+        #selectedOrigin
+        (click)="onSelectedOrigin(selectedOrigin, matchingOrigin)">
+          {{matchingOrigin.city}}, {{matchingOrigin.name}} ({{matchingOrigin.code}})
+        </li>
+        <li *ngIf="noResultsOrigin">No results found :(</li>
+      </ul>
+    </div>
 
-            <li *ngFor="let matchingOrigin of matchingOriginAirports" class="list-item" 
-            #selectedOrigin (click)="onSelectedOrigin(selectedOrigin); selectedOriginObj(matchingOrigin)">
-            {{matchingOrigin.city}}, {{matchingOrigin.name}} ({{matchingOrigin.code}})
-            </li>
+    <!--destination-->
+    <div class="field">
+      <label for="destination" class="form-label">To</label>
+      <input class="form-input" type="text" name="destination" id="destination" formControlName = "destination"
+      #destinationInput
+      (input)="onDestinationInput(destinationInput.value)" 
+      required>
+      <p *ngIf="flightForm.get('destination')?.invalid && flightForm.get('destination')?.dirty && !showDestinationMatch" class="invalid-input">Invalid input. Please select an option from the list.</p>
 
-            <li *ngIf="noResultsOrigin">No results found :(</li>
+      <ul *ngIf = "showDestinationMatch"  class="list destination" id="destination-list">
+        <li *ngFor="let matchingDestination of matchingDestinationAirports" class="list-item"
+        #selectedDestination
+        (click)="onSelectedDestination(selectedDestination, matchingDestination)">
+          {{matchingDestination.city}}, {{matchingDestination.name}} ({{matchingDestination.code}})
+        </li>
+        <li *ngIf="noResultsDestination">No results found :(</li>
+      </ul>
+    </div>
 
-        </ul>
+    <!--cabin class-->
+    <div class="field">
+      <label for="cabin_class" class="form-label">Cabin class</label>
+      <select class="form-input" name="cabin_class" id="cabin_class" formControlName = "cabin_class" required>
+        <option *ngFor="let cabin_class of cabin_class_options" [value]="cabin_class">{{cabin_class}}</option>
+      </select>
+    </div>
 
-      </div>
+    <!--tickets-->
+    <div class="field">
+      <label for="tickets" class="form-label">N° tickets</label>
+      <input class="form-input" type="number" name="tickets" id="tickets" formControlName = "tickets" min="1" required>
+    </div>
+    <!--submit button-->
+    <div class="button-container">
+      <button class="button" type="submit" [disabled]="!flightForm.valid">Go</button>
+    </div>
 
-      <!--destination-->
-      <div class="field">
-        <label for="destination" class="form-label">To</label>
-        <input type="text" class="form-input" name="destination" id="destination"
-          #destinationInput
-          (input)="onDestinationInput(destinationInput.value)"
-          
-          required ngModel >
-
-        <ul *ngIf="showDestinationMatch" class="list destination" id="destination-list">
-
-          <li *ngFor="let matchingDestination of matchingDestinationAirports" class="list-item" 
-            #selectedDestination (click)="onSelectedDestination(selectedDestination); selectedDestinationObj(matchingDestination)">
-            {{matchingDestination.city}}, {{matchingDestination.name}} ({{matchingDestination.code}})
-            </li>
-
-          <li *ngIf="noResultsDestination">No results found :(</li>
-
-        </ul>
-      </div>
-
-      <!--cabin class-->
-      <div class="field">
-        <label for="cabin_class" class="form-label">Cabin class</label>
-        <select class="form-input" name="cabin_class" id="cabin_class" required ngModel>
-          <option *ngFor="let cabin_class of cabin_class_options" [value]="cabin_class" >{{cabin_class}}</option>
-        </select>
-      </div>
-
-      <!--tickets-->
-      <div class="field">
-        <label for="tickets" class="form-label">N° tickets</label>
-        <input type="number" class="form-input" name="tickets" id="tickets" min="1" required ngModel>
-      </div>
-      <!--submit button-->
-      <div class="button-container">
-        <button class="button" type="submit" [disabled]="!flightFootprintForm.form.valid">Go</button>
-      </div>
-
-    </form>
-  </section>
+  </form>
+</section>

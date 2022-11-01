@@ -3,10 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FlightFootprintInfoComponent } from './flight-footprint-info.component';
 import { FootprintService } from 'src/app/services/footprint.service';
 import { Airport } from 'src/app/models/airport.model';
-import { FlightForm } from 'src/app/models/form.model';
 import { of } from 'rxjs';
 import { Footprint } from 'src/app/models/footprint.model';
 import { By } from '@angular/platform-browser';
+import { FormGroup } from '@angular/forms';
 
 describe('FlightFootprintInfoComponent', () => {
   let component: FlightFootprintInfoComponent;
@@ -14,11 +14,11 @@ describe('FlightFootprintInfoComponent', () => {
   let footprintServiceSpy: any;
 
   let airportDummy: Airport[] = [{"code": "ABC", "lat": "-17.3595", "lon": "-145.494", "name": "Abc Airport", "city": "abc city", "state": "abc state", "country": "abc country", "woeid": "1234567", "tz": "abc tz", "phone": "abc phone", "type": "Airports", "email": "abc emails", "url": "abc url", "runway_length": "abc runway", "elev": "abc elev", "icao": "abc icao", "direct_flights": "2", "carriers": "1"}, {"code": "def", "lat": "-17.3595", "lon": "-145.494", "name": "def Airport", "city": "def city", "state": "def state", "country": "def country", "woeid": "1234567", "tz": "def tz", "phone": "def phone", "type": "Airports", "email": "def emails", "url": "def url", "runway_length": "def runway", "elev": "def elev", "icao": "def icao", "direct_flights": "2", "carriers": "1"}];
-  let flightFormDummy : FlightForm = {"originObject": airportDummy[0], "destinationObject": airportDummy[1], "cabin_class" : "economy", "tickets": 2, "getOriginCode" : () => airportDummy[0]["code"], "getDestinationCode" : () => airportDummy[1]["code"], "getCabinClass" : () => "economy", "getTickets": () => 2 };
+  let flightFormDummy = <FormGroup>{value: { origin: airportDummy[0], destination: airportDummy[1], cabin_class: "economy", tickets: 2}};
   let footprintDummy: Footprint = {footprint: 1400, details_url: "", offset_prices: [{ amount: 18000, currency: "SEK", locale: "sv-SE", offset_url: "https://www.goclimate.com/se/flight_offsets/new?offset_params=economy%2CAAR%2CBGM" }]};
 
   beforeEach(async () => {
-    footprintServiceSpy = jasmine.createSpyObj<FootprintService>(['getParams', 'getFootprint']);
+    footprintServiceSpy = jasmine.createSpyObj<FootprintService>(['getFootprint']);
 
     await TestBed.configureTestingModule({
       declarations: [ FlightFootprintInfoComponent ],
@@ -41,10 +41,6 @@ describe('FlightFootprintInfoComponent', () => {
     expect(component.flightInfosInput).toBeUndefined();
   });
 
-  it('footprint should be undefined', () => {
-    expect(component.footprint).toBeUndefined();
-  });
-
   it('singleTicketFootprint should be undefined', () => {
     expect(component.singleTicketFootprint).toBeUndefined();
   });
@@ -53,28 +49,17 @@ describe('FlightFootprintInfoComponent', () => {
     expect(component.totalTicketsFootprint).toBeUndefined();
   });
 
-  it('footprintService.getParams() and footprintService.getFootprint should be called if flightInfosInput is defined', () => {
-    component.flightInfosInput = flightFormDummy;
-    footprintServiceSpy.getFootprint.and.returnValue(of(footprintDummy["footprint"]));
-    fixture.detectChanges();
-    component.ngOnChanges();
-    expect(footprintServiceSpy.getParams).toHaveBeenCalled();
-    expect(footprintServiceSpy.getFootprint).toHaveBeenCalled();
-  });
-
   it('footprintService.getFootprint should call calculateFootprint()', () => {
     spyOn(component, 'calculateFootprint');
-    component.flightInfosInput = flightFormDummy;
+    component.flightInfosInput = flightFormDummy["value"];
     footprintServiceSpy.getFootprint.and.returnValue(of(footprintDummy["footprint"]));
     fixture.detectChanges();
     component.ngOnChanges();
-    expect(component.footprint).toEqual(footprintDummy["footprint"]);
     expect(component.calculateFootprint).toHaveBeenCalled();
   });
 
   it('calculateFootprint() should set singleTicketFootprint value and totalTicketsFootprintValue', () => {
-    component.flightInfosInput = flightFormDummy;
-    component.footprint = footprintDummy["footprint"];
+    component.flightInfosInput = flightFormDummy["value"];
     fixture.detectChanges();
     component.calculateFootprint(footprintDummy["footprint"]);
     expect(component.singleTicketFootprint).toBeDefined();
@@ -112,7 +97,7 @@ describe('FlightFootprintInfoComponent', () => {
     });
 
     it('section.column should contain div.info containing 3 div.info-item if flightInfosInput is defined', () => {
-      component.flightInfosInput = flightFormDummy;
+      component.flightInfosInput = flightFormDummy["value"];
       fixture.detectChanges();
 
       let sectionDe = fixture.debugElement.query(By.css('section.column'));
@@ -133,7 +118,7 @@ describe('FlightFootprintInfoComponent', () => {
     });
 
     it('the first div.info-item should contain p, div.arrow-center and another p in this order', () => {
-      component.flightInfosInput = flightFormDummy;
+      component.flightInfosInput = flightFormDummy["value"];
       fixture.detectChanges();
       let divInfoItemDe = fixture.debugElement.queryAll(By.css('div.info-item'));
       let divInfoItemOneEl = divInfoItemDe[0].nativeElement;
@@ -147,7 +132,7 @@ describe('FlightFootprintInfoComponent', () => {
     });
 
     it('first div.info-item first p should render information about the origin of the flight', () => {
-      component.flightInfosInput = flightFormDummy;
+      component.flightInfosInput = flightFormDummy["value"];
       fixture.detectChanges();
       let divInfoItemDe = fixture.debugElement.queryAll(By.css('div.info-item'));
       let divInfoItemOneEl = divInfoItemDe[0].nativeElement;
@@ -157,12 +142,12 @@ describe('FlightFootprintInfoComponent', () => {
       expect(firstP.children[0].localName).toBe('span');
       expect(firstP.children[0].innerText).toBe('From');
       expect(firstP.children[1].localName).toBe('span');
-      expect(firstP.children[1].innerText).toBe(`${component.flightInfosInput.originObject.city}, ${component.flightInfosInput.originObject.name} (${component.flightInfosInput.originObject.code})`);
+      expect(firstP.children[1].innerText).toBe(`${component.flightInfosInput.origin.city}, ${component.flightInfosInput.origin.name} (${component.flightInfosInput.origin.code})`);
       
     });
 
     it('first div.info-item second p should render information about the arrival of the flight', () => {
-      component.flightInfosInput = flightFormDummy;
+      component.flightInfosInput = flightFormDummy["value"];
       fixture.detectChanges();
       let divInfoItemDe = fixture.debugElement.queryAll(By.css('div.info-item'));
       let divInfoItemOneEl = divInfoItemDe[0].nativeElement;
@@ -172,11 +157,11 @@ describe('FlightFootprintInfoComponent', () => {
       expect(secondP.children[0].localName).toBe('span');
       expect(secondP.children[0].innerText).toBe('To');
       expect(secondP.children[1].localName).toBe('span');
-      expect(secondP.children[1].innerText).toBe(`${component.flightInfosInput.destinationObject.city}, ${component.flightInfosInput.destinationObject.name} (${component.flightInfosInput.destinationObject.code})`);
+      expect(secondP.children[1].innerText).toBe(`${component.flightInfosInput.destination.city}, ${component.flightInfosInput.destination.name} (${component.flightInfosInput.destination.code})`);
     });
 
     it('second div.info-item should contain p.text-center which should render cabin class flight infos', () => {
-      component.flightInfosInput = flightFormDummy;
+      component.flightInfosInput = flightFormDummy["value"];
       fixture.detectChanges();
       let divInfoItemDe = fixture.debugElement.queryAll(By.css('div.info-item'));
       let divInfoItemTwoEl = divInfoItemDe[1].nativeElement;
@@ -194,7 +179,7 @@ describe('FlightFootprintInfoComponent', () => {
     });
 
     it('third div.info-item should contain p.text-center.footprint, div.text-center.footprint in this order', () => {
-      component.flightInfosInput = flightFormDummy;
+      component.flightInfosInput = flightFormDummy["value"];
       fixture.detectChanges();
       let divInfoItemDe = fixture.debugElement.queryAll(By.css('div.info-item'));
       let divInfoItemThreeEl = divInfoItemDe[2].nativeElement;
@@ -209,7 +194,7 @@ describe('FlightFootprintInfoComponent', () => {
     });
 
     it('third div.info-item p.text-center.footprint should render singleTicketFootprint value', () => {
-      component.flightInfosInput = flightFormDummy;
+      component.flightInfosInput = flightFormDummy["value"];
       component.singleTicketFootprint = 2;
       fixture.detectChanges();
       let divInfoItemDe = fixture.debugElement.queryAll(By.css('div.info-item'));
@@ -225,7 +210,7 @@ describe('FlightFootprintInfoComponent', () => {
     });
 
     it('third div.info-item div.text-center.footprint should render the number of tickets and totalTicketsFootprint value', () => {
-      component.flightInfosInput = flightFormDummy;
+      component.flightInfosInput = flightFormDummy["value"];
       component.totalTicketsFootprint = 4;
       fixture.detectChanges();
       let divInfoItemDe = fixture.debugElement.queryAll(By.css('div.info-item'));

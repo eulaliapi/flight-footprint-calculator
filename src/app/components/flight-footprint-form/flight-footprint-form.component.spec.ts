@@ -1,9 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import { Airport } from 'src/app/models/airport.model';
-import { FlightForm } from 'src/app/models/form.model';
 import { FootprintService } from 'src/app/services/footprint.service';
 
 import { FlightFootprintFormComponent } from './flight-footprint-form.component';
@@ -14,7 +13,7 @@ describe('FlightFootprintFormComponent', () => {
   let footprintServiceSpy: any;
 
   let airportDummy: Airport[] = [{"code": "ABC", "lat": "-17.3595", "lon": "-145.494", "name": "Abc Airport", "city": "abc city", "state": "abc state", "country": "abc country", "woeid": "1234567", "tz": "abc tz", "phone": "abc phone", "type": "Airports", "email": "abc emails", "url": "abc url", "runway_length": "abc runway", "elev": "abc elev", "icao": "abc icao", "direct_flights": "2", "carriers": "1"}, {"code": "def", "lat": "-17.3595", "lon": "-145.494", "name": "def Airport", "city": "def city", "state": "def state", "country": "def country", "woeid": "1234567", "tz": "def tz", "phone": "def phone", "type": "Airports", "email": "def emails", "url": "def url", "runway_length": "def runway", "elev": "def elev", "icao": "def icao", "direct_flights": "2", "carriers": "1"}];
-  let ngFormDummy =<NgForm>{value: {cabin_class: "economy", tickets: 2}, reset:() => {}, form: { disabled : true }};
+  let flightFormDummy = <FormGroup>{value: { origin: airportDummy[0], destination: airportDummy[1], cabin_class: "economy", tickets: 2}};
   let liHTML = document.createElement('li');
   liHTML.innerText = "testCity, testName, (testCode)"
   let LiItemDummy: HTMLLIElement = liHTML;
@@ -25,7 +24,7 @@ describe('FlightFootprintFormComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ FlightFootprintFormComponent ],
       providers: [{provide: FootprintService, useValue: footprintServiceSpy}],
-      imports: [FormsModule],
+      imports: [ReactiveFormsModule],
     })
     .compileComponents();
   });
@@ -63,14 +62,6 @@ describe('FlightFootprintFormComponent', () => {
 
   it('matchingDestinationAirports should be empty', () => {
     expect(component.matchingDestinationAirports).toEqual([]);
-  });
-
-  it('selectedOriginAirport should not be null', () => {
-    expect(component.selectedOriginAirport).not.toBeNull();
-  });
-
-  it('selectedDestinationAirport should not be null', () => {
-    expect(component.selectedDestinationAirport).not.toBeNull();
   });
 
   it('noResultsOrigin should be false', () => {
@@ -208,44 +199,55 @@ describe('FlightFootprintFormComponent', () => {
 
   });
 
-  it('onSelectedOrigin(el)', () => {
-    component.onSelectedOrigin(LiItemDummy)
+  it('onSelectedOrigin(el, airport)', () => {
+    spyOn(component.flightForm, 'patchValue');
+    component.onSelectedOrigin(LiItemDummy, airportDummy[0]);
+    expect(component.flightForm.patchValue).toHaveBeenCalled();
+    expect(component.flightForm.patchValue).toHaveBeenCalledWith({origin: airportDummy[0]});
     expect(component.originInput.nativeElement.value).toEqual(LiItemDummy.innerHTML);
     expect(component.showOriginMatch).toBeFalse();
   });
 
-  it('onSelectedDestination(el)', () => {
-    component.onSelectedDestination(LiItemDummy)
+  it('onSelectedDestination(el, airport)', () => {
+    spyOn(component.flightForm, 'patchValue');
+    component.onSelectedDestination(LiItemDummy, airportDummy[1]);
+    expect(component.flightForm.patchValue).toHaveBeenCalled();
+    expect(component.flightForm.patchValue).toHaveBeenCalledWith({destination: airportDummy[1]});
     expect(component.destinationInput.nativeElement.value).toEqual(LiItemDummy.innerHTML);
     expect(component.showDestinationMatch).toBeFalse();
   });
 
-  it('selectedOriginObj(obj)', () => {
-    component.selectedOriginObj(airportDummy[0]);
-    expect(component.selectedOriginAirport).toEqual(airportDummy[0]);
+  it('onSubmit() should not be called if form is invalid', () => {
+    let btnDe = fixture.debugElement.query(By.css('button'));
+    let btnEl = btnDe.nativeElement;
+    btnEl.click()
+    spyOn(component, 'onSubmit');
+    fixture.detectChanges();
+    expect(btnEl.disabled).toBeTrue();
+    expect(component.onSubmit).not.toHaveBeenCalled();
   });
 
-  it('selectedDestinationObj(obj)', () => {
-    component.selectedDestinationObj(airportDummy[0]);
-    expect(component.selectedDestinationAirport).toEqual(airportDummy[0]);
+  it('onSubmit() should be passible of call if form is valid', () => {
+    spyOn(component, 'onSubmit');
+    component.flightForm.setValue({origin: airportDummy[0], destination: airportDummy[1], cabin_class: "economy", tickets: 1});
+    fixture.detectChanges();
+    let btnDe = fixture.debugElement.query(By.css('button'));
+    let btnEl = btnDe.nativeElement;
+    expect(btnEl.disabled).toBeFalse();
+    btnEl.click();
+    fixture.detectChanges();
+    expect(component.onSubmit).toHaveBeenCalled();
   });
 
-  it('onSubmit(form) calls newForm if selectedOriginAirport and selectedeDestinationAirport are not undefined', () => {
+  it('onSubmit() should emit form.value and reset', () => {
     spyOn(component.newForm, 'emit');
-    component.selectedOriginAirport = airportDummy[0];
-    component.selectedDestinationAirport = airportDummy[1];
-    let flightFormDummy = new FlightForm(component.selectedOriginAirport, component.selectedDestinationAirport, ngFormDummy.value["cabin_class"], ngFormDummy.value.tickets);
-    component.onSubmit(ngFormDummy);
-    expect(component.newForm.emit).toHaveBeenCalledWith(flightFormDummy);
-  });
-  
-  it('onSubmit(form) does not call newForm if selectedOriginAirport or/and selectedeDestinationAirport are undefined', () => {
-    spyOn(component.newForm, 'emit');
-    component.selectedOriginAirport = airportDummy[0]
-    let flightFormDummy = new FlightForm(component.selectedOriginAirport, component.selectedDestinationAirport, ngFormDummy.value["cabin_class"], ngFormDummy.value.tickets);
-    component.onSubmit(ngFormDummy);
-    expect(component.newForm.emit).not.toHaveBeenCalled();
-  });
+    spyOn(component.flightForm, 'reset');
+    component.flightForm.setValue({origin: airportDummy[0], destination: airportDummy[1], cabin_class: "economy", tickets: 1});
+    component.onSubmit();
+    expect(component.newForm.emit).toHaveBeenCalledWith(component.flightForm.value);
+    expect(component.flightForm.reset).toHaveBeenCalled();
+  })
+
 
   describe('HTML Content', () => {
 
@@ -273,7 +275,7 @@ describe('FlightFootprintFormComponent', () => {
       it('should be invalid at initialization', () => {
         let formDe = fixture.debugElement.query(By.css('form.form'));
         let formEl = formDe.nativeElement;
-        // console.log(formDe)
+        expect(formEl).toHaveClass("ng-invalid");
       });
 
       it('should contain 4 div.field and 1 div.button-container elements', () => {
@@ -315,12 +317,23 @@ describe('FlightFootprintFormComponent', () => {
           expect(fieldDivElOne.children[2].localName).toBe('ul');
           expect(fieldDivElOne.children[2].id).toBe('origin-list');
         });
+
+        it('should contain p.invalid-input if flightForm.origin is invalid and dirty and showOriginMatch is false', () => {
+          component.flightForm.controls["origin"].markAsDirty();
+          component.flightForm.patchValue({origin: 'ciao'})
+          component.showOriginMatch = false;
+          fixture.detectChanges();
+          let fieldDivDe = fixture.debugElement.queryAll(By.css('div.field'));
+          let fieldDivElOne = fieldDivDe[0].nativeElement;
+          expect(fieldDivElOne.children.length).toBe(3);
+          expect(fieldDivElOne.children[2].localName).toBe('p');
+          expect(fieldDivElOne.children[2]).toHaveClass('invalid-input');
+        })
         
         it('input#origin', () => {
           let inputOriginDe = fixture.debugElement.query(By.css('input#origin'));
           let inputOriginEl = inputOriginDe.nativeElement;
           expect(inputOriginEl.attributes.required).toBeTruthy();
-          expect(inputOriginEl.attributes.ngmodel).toBeTruthy();
         });
 
         it('ul#origin-list should be empty at first', () => {
@@ -409,11 +422,22 @@ describe('FlightFootprintFormComponent', () => {
           expect(fieldDivElTwo.children[2].id).toBe('destination-list');
         });
 
+        it('should contain p.invalid-input if flightForm.origin is invalid and dirty and showOriginMatch is false', () => {
+          component.flightForm.controls["destination"].markAsDirty();
+          component.flightForm.patchValue({destination: 'c'})
+          component.showDestinationMatch = false;
+          fixture.detectChanges();
+          let fieldDivDe = fixture.debugElement.queryAll(By.css('div.field'));
+          let fieldDivElTwo = fieldDivDe[1].nativeElement;
+          expect(fieldDivElTwo.children.length).toBe(3);
+          expect(fieldDivElTwo.children[2].localName).toBe('p');
+          expect(fieldDivElTwo.children[2]).toHaveClass('invalid-input');
+        })
+
         it('input#destination', () => {
           let inputDestinationDe = fixture.debugElement.query(By.css('input#destination'));
           let inputDestinationEl = inputDestinationDe.nativeElement;
           expect(inputDestinationEl.attributes.required).toBeTruthy();
-          expect(inputDestinationEl.attributes.ngmodel).toBeTruthy();
         });
 
         it('ul#destination-list should be empty at first', () => {
@@ -497,7 +521,6 @@ describe('FlightFootprintFormComponent', () => {
           let selectInputEl = selectInputDe.nativeElement;
 
           expect(selectInputEl.attributes.required).toBeTruthy();
-          expect(selectInputEl.attributes.ngmodel).toBeTruthy();
 
           expect(selectInputEl.children.length).toEqual(component.cabin_class_options.length);
           expect(selectInputEl.children[0].localName).toBe("option");
@@ -532,7 +555,6 @@ describe('FlightFootprintFormComponent', () => {
           let inputTicketsEl = inputTicketsDe.nativeElement;
 
           expect(inputTicketsEl.attributes.required).toBeTruthy();
-          expect(inputTicketsEl.attributes.ngmodel).toBeTruthy();
           expect(inputTicketsEl.type).toBe("number");
           expect(inputTicketsEl.min).toBe("1");
 
@@ -552,6 +574,22 @@ describe('FlightFootprintFormComponent', () => {
           expect(buttonContainerEl.children[0].localName).toBe("button");
           expect(buttonEl.type).toBe("submit");
         });
+
+        it('button should be disabled if form is not valid', () => {
+          let buttonDe = fixture.debugElement.query(By.css('button.button'));
+          let buttonEl = buttonDe.nativeElement;
+
+          expect(buttonEl.disabled).toBeTrue();
+        })
+
+        it('button should be enabled if form is valid', () => {
+          let buttonDe = fixture.debugElement.query(By.css('button.button'));
+          let buttonEl = buttonDe.nativeElement;
+          component.flightForm.clearAsyncValidators();
+          component.flightForm.clearValidators();
+          fixture.detectChanges();
+          expect(buttonEl.disabled).toBeTrue();
+        })
 
       });
       

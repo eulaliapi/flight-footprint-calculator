@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { FootprintService } from 'src/app/services/footprint.service';
+import { validateAirport } from 'src/app/directives/validate-airport.directive';
 
 import { Airport } from 'src/app/models/airport.model';
-import { FlightForm } from 'src/app/models/form.model';
 
 @Component({
   selector: 'app-flight-footprint-form',
@@ -15,7 +15,7 @@ export class FlightFootprintFormComponent implements OnInit {
   @ViewChild('originInput') originInput!: ElementRef;
   @ViewChild('destinationInput') destinationInput!: ElementRef;
 
-  @Output() newForm = new EventEmitter<FlightForm>();
+  @Output() newForm = new EventEmitter<FormGroup["value"]>();
 
   //array of airports
   public airports$: Airport[] = [];
@@ -23,10 +23,6 @@ export class FlightFootprintFormComponent implements OnInit {
   //arrays of airports that match user's text input
   matchingOriginAirports: Airport[] = [];
   matchingDestinationAirports: Airport[] = [];
-
-  //Airport objects selected by the user
-  selectedOriginAirport!: Airport;
-  selectedDestinationAirport!: Airport;
 
   noResultsOrigin: boolean = false;
   noResultsDestination: boolean = false;
@@ -37,6 +33,13 @@ export class FlightFootprintFormComponent implements OnInit {
 
   //cabin class options
   cabin_class_options: string[] = ['economy', 'premium_economy', 'business', 'first'];
+
+  flightForm = new FormGroup({
+    origin: new FormControl('', validateAirport),
+    destination: new FormControl('', validateAirport),
+    cabin_class: new FormControl(''),
+    tickets: new FormControl('')
+  });
 
   constructor(private footprintService: FootprintService ) { }
 
@@ -100,33 +103,23 @@ export class FlightFootprintFormComponent implements OnInit {
   }
 
   //when the user selects a li, its text is displayed in the input and the list disappears
-  onSelectedOrigin(el: HTMLLIElement){
+  onSelectedOrigin(el: HTMLLIElement, airport: Airport){
+    this.flightForm.patchValue({origin: airport});
     this.originInput.nativeElement.value = el.innerHTML;
     this.showOriginMatch = false;
   }
 
   //when the user selects a li, its text is displayed in the input and the list disappears
-  onSelectedDestination(el: HTMLLIElement){
+  onSelectedDestination(el: HTMLLIElement, airport: Airport){
+    this.flightForm.patchValue({destination: airport});
     this.destinationInput.nativeElement.value = el.innerHTML;
     this.showDestinationMatch = false;
   }
 
-  selectedOriginObj(obj: Airport){
-    this.selectedOriginAirport = obj;
-  }
-  selectedDestinationObj(obj: Airport){
-    this.selectedDestinationAirport = obj;
-  }
-
-  onSubmit(form: NgForm) {
-    let filledForm = new FlightForm(this.selectedOriginAirport, this.selectedDestinationAirport, form.value.cabin_class, form.value.tickets);
-    if(filledForm.originObject !== undefined && filledForm.destinationObject !== undefined) {
-      this.newForm.emit(filledForm);
-      form.reset();
-    } else {
-      form.form.disabled;
-    }
-    
+  //outputs the form to main-container
+  onSubmit() { 
+    this.newForm.emit(this.flightForm.value);
+    this.flightForm.reset();
   }
 
 }

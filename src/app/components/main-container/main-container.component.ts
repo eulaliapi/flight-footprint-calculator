@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FootprintService } from 'src/app/services/footprint.service';
-
-import { FlightForm } from 'src/app/models/form.model';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-main-container',
@@ -10,15 +8,15 @@ import { FlightForm } from 'src/app/models/form.model';
 })
 export class MainContainerComponent implements OnInit {
 
-  flightInfos?: FlightForm;
+  flightInfos?: FormGroup["value"];
 
   constructor() { }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
-  getFilledForm(form: FlightForm){
-    this.flightInfos = form;
-  }
+  //gets the form and inputs it in flight-footprint-info
+  getForm(form: FormGroup["value"]){
+    this.flightInfos = form
+  };
 
 }

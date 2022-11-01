@@ -30,12 +30,6 @@
 }
 
 @media screen and (min-width: 48em) {
-    
-    .footer {
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-    }
 
     .footer-container {
         display: flex;
@@ -44,5 +38,13 @@
     
     .footer-item {
         margin: 0.8em 1em;
+    }
+}
+
+@media screen and (min-width: 62.5rem) {
+    .footer {
+        position: fixed;
+        width: 100%;
+        bottom: 0;
     }
 }
