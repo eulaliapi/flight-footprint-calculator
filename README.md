@@ -9,15 +9,16 @@ The app uses the [API](https://api.goclimate.com/docs) provided by [GoClimate](h
 Through a form, the user is able to enter origin and destination of the flight, choose the cabin class and the number of passengers of that flight.</br>
 In a paragraph the submitted information will be displayed followed by the carbon footprint.
 
+##
 <img src="https://user-images.githubusercontent.com/98905459/199572395-45c0c6db-8812-4ad7-828e-ac21c825ea2b.png" alt="flight footprint at start" width="70%">
 
-The origin and the destination of the flight have to be chosen from the given list.
+The origin and the destination of the flight shall be selected from the given list.
 <img src="https://user-images.githubusercontent.com/98905459/199572416-980a4336-3897-4eb9-8c42-b0988e05300f.png" alt="flight footprint list of airports" width="70%">
 
-If the text doesn't much any of the available airports then the list will be filled with a list item saying "No results found :(".
+If the text input by the user doesn't match any of the available airports then the list will be filled with a list item saying "No results found :(".
 <img src="https://user-images.githubusercontent.com/98905459/199573255-70a36cd5-b558-48fb-9319-14360669d0a1.png" width="70%">
 
-The user will be informed that the input is invalid with a message
+If the user does not select an airport from the list, they will be informed that the input is invalid with a message.
 <img src="https://user-images.githubusercontent.com/98905459/199572435-5a2f5750-d5d5-4303-9194-b409c9724143.png" width="70%">
 
 If the form is valid then the "Go" button will be enabled and the form can be submitted.
