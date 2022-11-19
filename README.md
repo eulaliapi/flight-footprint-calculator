@@ -10,22 +10,25 @@ Through a form, the user is able to enter origin and destination of the flight, 
 In a paragraph the submitted information will be displayed followed by the carbon footprint.
 
 ##
-<img src="https://user-images.githubusercontent.com/98905459/199572395-45c0c6db-8812-4ad7-828e-ac21c825ea2b.png" alt="flight footprint at start" width="70%">
+<img src="https://user-images.githubusercontent.com/98905459/202851117-78039f5f-97e0-436a-9d68-429520fc4ea6.png" alt="flight footprint at start" width="70%">
 
-The origin and the destination of the flight shall be selected from the given list.
-<img src="https://user-images.githubusercontent.com/98905459/199572416-980a4336-3897-4eb9-8c42-b0988e05300f.png" alt="flight footprint list of airports" width="70%">
+The origin and the destination of the flight shall be selected from the given list.</br>
+<img src="https://user-images.githubusercontent.com/98905459/202851126-ad330572-3588-4239-a91d-eac02069da29.png" alt="flight footprint list of airports" width="70%">
 
-If the text input by the user doesn't match any of the available airports then the list will be filled with a list item saying "No results found :(".
-<img src="https://user-images.githubusercontent.com/98905459/199573255-70a36cd5-b558-48fb-9319-14360669d0a1.png" width="70%">
+If the text input by the user doesn't match any of the available airports then the list will be filled with a list item saying "No results found :(".</br>
+<img src="https://user-images.githubusercontent.com/98905459/202851173-72c6cf92-30fe-4d98-8cb3-edbf9dfeb0b1.png" width="70%">
 
-If the user does not select an airport from the list, they will be informed that the input is invalid with a message.
-<img src="https://user-images.githubusercontent.com/98905459/199572435-5a2f5750-d5d5-4303-9194-b409c9724143.png" width="70%">
+If the user does not select an airport from the list, they will be informed that the input is invalid with a message. </br>
+<img src="https://user-images.githubusercontent.com/98905459/202851178-09d04203-9c5c-4e33-a79b-d239a9d4b6b5.png" width="70%">
 
-If the form is valid then the "Go" button will be enabled and the form can be submitted.
-<img src="https://user-images.githubusercontent.com/98905459/199572596-f775479a-fc51-4370-8ca3-efb771805e64.png" width="70%">
+The form will be invalid until all fields have a valid value.</br>
+<img src="https://user-images.githubusercontent.com/98905459/202851188-820b852f-bfed-45a8-8f04-cbac46e99b19.png" width="70%">
 
-The result will be displayed and the form will be reset
-<img src="https://user-images.githubusercontent.com/98905459/199572607-554656a4-059f-4456-88af-3bd5f9d210da.png" width="70%">
+If the form is valid then the "Go" button will be enabled and the form can be submitted.</br>
+<img src="https://user-images.githubusercontent.com/98905459/202851192-94add602-65b2-456a-afa0-8134a2bcedbc.png" width="70%">
+
+The result will be displayed. </br>
+<img src="https://user-images.githubusercontent.com/98905459/202851198-bcbd8208-9202-4bbb-bbff-e64627e33b9b.png" width="70%">
 
 ## Development server
 
