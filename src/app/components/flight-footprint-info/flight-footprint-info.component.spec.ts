@@ -1,30 +1,23 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FlightFootprintInfoComponent } from './flight-footprint-info.component';
-import { FootprintService } from 'src/app/services/footprint.service';
 import { Airport } from 'src/app/models/airport.model';
-import { of } from 'rxjs';
-import { Footprint } from 'src/app/models/footprint.model';
 import { By } from '@angular/platform-browser';
 import { FormGroup } from '@angular/forms';
 
 describe('FlightFootprintInfoComponent', () => {
   let component: FlightFootprintInfoComponent;
   let fixture: ComponentFixture<FlightFootprintInfoComponent>;
-  let footprintServiceSpy: any;
 
-  let airportDummy: Airport[] = [{"code": "ABC", "lat": "-17.3595", "lon": "-145.494", "name": "Abc Airport", "city": "abc city", "state": "abc state", "country": "abc country", "woeid": "1234567", "tz": "abc tz", "phone": "abc phone", "type": "Airports", "email": "abc emails", "url": "abc url", "runway_length": "abc runway", "elev": "abc elev", "icao": "abc icao", "direct_flights": "2", "carriers": "1"}, {"code": "def", "lat": "-17.3595", "lon": "-145.494", "name": "def Airport", "city": "def city", "state": "def state", "country": "def country", "woeid": "1234567", "tz": "def tz", "phone": "def phone", "type": "Airports", "email": "def emails", "url": "def url", "runway_length": "def runway", "elev": "def elev", "icao": "def icao", "direct_flights": "2", "carriers": "1"}];
-  let flightFormDummy = <FormGroup>{value: { origin: airportDummy[0], destination: airportDummy[1], cabin_class: "economy", tickets: 2}};
-  let footprintDummy: Footprint = {footprint: 1400, details_url: "", offset_prices: [{ amount: 18000, currency: "SEK", locale: "sv-SE", offset_url: "https://www.goclimate.com/se/flight_offsets/new?offset_params=economy%2CAAR%2CBGM" }]};
+  let airportDummy: Airport[] = [{ "code": "ABC", "lat": "-17.3595", "lon": "-145.494", "name": "Abc Airport", "city": "abc city", "state": "abc state", "country": "abc country", "woeid": "1234567", "tz": "abc tz", "phone": "abc phone", "type": "Airports", "email": "abc emails", "url": "abc url", "runway_length": "abc runway", "elev": "abc elev", "icao": "abc icao", "direct_flights": "2", "carriers": "1" }, { "code": "def", "lat": "-17.3595", "lon": "-145.494", "name": "def Airport", "city": "def city", "state": "def state", "country": "def country", "woeid": "1234567", "tz": "def tz", "phone": "def phone", "type": "Airports", "email": "def emails", "url": "def url", "runway_length": "def runway", "elev": "def elev", "icao": "def icao", "direct_flights": "2", "carriers": "1" }];
+  let flightFormDummy = <FormGroup>{ value: { origin: airportDummy[0], destination: airportDummy[1], cabin_class: "economy", tickets: 2 } };
+  let flightFootprintObjectDummy: [number[], FormGroup["value"]] = [[1, 2], flightFormDummy["value"]];
 
   beforeEach(async () => {
-    footprintServiceSpy = jasmine.createSpyObj<FootprintService>(['getFootprint']);
-
     await TestBed.configureTestingModule({
-      declarations: [ FlightFootprintInfoComponent ],
-      providers: [{provide: FootprintService, useValue: footprintServiceSpy}]
+      declarations: [FlightFootprintInfoComponent],
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
@@ -37,191 +30,219 @@ describe('FlightFootprintInfoComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('flightInfosInput should be undefined', () => {
-    expect(component.flightInfosInput).toBeUndefined();
-  });
-
-  it('singleTicketFootprint should be undefined', () => {
-    expect(component.singleTicketFootprint).toBeUndefined();
-  });
-
-  it('totalTicketsFootprint should be undefined', () => {
-    expect(component.totalTicketsFootprint).toBeUndefined();
-  });
-
-  it('footprintService.getFootprint should call calculateFootprint()', () => {
-    spyOn(component, 'calculateFootprint');
-    component.flightInfosInput = flightFormDummy["value"];
-    footprintServiceSpy.getFootprint.and.returnValue(of(footprintDummy["footprint"]));
-    fixture.detectChanges();
-    component.ngOnChanges();
-    expect(component.calculateFootprint).toHaveBeenCalled();
-  });
-
-  it('calculateFootprint() should set singleTicketFootprint value and totalTicketsFootprintValue', () => {
-    component.flightInfosInput = flightFormDummy["value"];
-    fixture.detectChanges();
-    component.calculateFootprint(footprintDummy["footprint"]);
-    expect(component.singleTicketFootprint).toBeDefined();
-    expect(component.totalTicketsFootprint).toBeDefined();
-    expect(component.singleTicketFootprint).toEqual(Number((footprintDummy["footprint"]/1000).toFixed(2)));
-    expect(component.totalTicketsFootprint).toEqual(Number((component.singleTicketFootprint! * component.flightInfosInput.tickets).toFixed(2)))
+  it('flightFootprintObject should be undefined', () => {
+    expect(component.flightFootprintObject).toBeUndefined();
   });
 
   describe('HTML Content', () => {
 
-    it('should contain section.column', () => {
-      let sectionDe = fixture.debugElement.query(By.css('section.column'));
+    it('should contain a section', () => {
+      let sectionDe = fixture.debugElement.query(By.css('section'));
       let sectionEl = sectionDe.nativeElement;
-
-      expect(sectionEl).toBeTruthy();
-      expect(sectionEl.children.length).toEqual(1)
+      expect(sectionEl).toBeDefined();
     });
 
-    it('section.column should contain div.info containing div.card-item if flightInfosInput is undefined', () => {
-      let sectionDe = fixture.debugElement.query(By.css('section.column'));
-      let sectionEl = sectionDe.nativeElement;
-      let divInfoDe = fixture.debugElement.query(By.css('div.info'));
-      let divInfoEl = divInfoDe.nativeElement;
-      let divCardDe = fixture.debugElement.query(By.css('div.card-item'));
-      let divCardEl = divCardDe.nativeElement;
-      let pCardDe = fixture.debugElement.query(By.css('p.block-text'));
-      let pCardEl = pCardDe.nativeElement;
+    describe('section content if flightFootprintObject is undefined', () => {
 
-      expect(sectionEl.children[0]).toBe(divInfoEl);
-      expect(divInfoEl.children.length).toBe(1);
-      expect(divInfoEl.children[0]).toBe(divCardEl);
-      expect(divCardEl.children.length).toBe(1);
-      expect(divCardEl.children[0]).toBe(pCardEl);
-      expect(pCardEl.innerText).toBe("Enter the details of the flight and find out its emissions.");
+      it('should contain a p element if flightFootprintObject is undefined', () => {
+        expect(component.flightFootprintObject).toBeUndefined();
+        let sectionDe = fixture.debugElement.query(By.css('section'));
+        let sectionEl = sectionDe.nativeElement;
+        let pShowPresentationCardDe = fixture.debugElement.query(By.css('#show-presentation-card_p'));
+        let pShowPresentationCardEl = pShowPresentationCardDe.nativeElement;
+
+        expect(sectionEl.children.length).toBe(1);
+        expect(sectionEl.children[0]).toBe(pShowPresentationCardEl);
+        expect(pShowPresentationCardEl.innerText).toBe("Enter the details of the flight and find out its emissions.");
+      });
     });
 
-    it('section.column should contain div.info containing 3 div.info-item if flightInfosInput is defined', () => {
-      component.flightInfosInput = flightFormDummy["value"];
-      fixture.detectChanges();
+    describe('section content if flightFootprintObject is defined', () => {
 
-      let sectionDe = fixture.debugElement.query(By.css('section.column'));
-      let sectionEl = sectionDe.nativeElement;
-      let divInfoDe = fixture.debugElement.query(By.css('div.info'));
-      let divInfoEl = divInfoDe.nativeElement;
-      let divInfoItemDe = fixture.debugElement.queryAll(By.css('div.info-item'));
-      let divInfoItemOneEl = divInfoItemDe[0].nativeElement;
-      let divInfoItemTwoEl = divInfoItemDe[1].nativeElement;
-      let divInfoItemThreeEl = divInfoItemDe[2].nativeElement;
+      it('should contain three div elements if flightFootprintObject is defined', () => {
+        component.flightFootprintObject = flightFootprintObjectDummy;
+        fixture.detectChanges();
+        expect(component.flightFootprintObject).toBeDefined();
 
-      expect(sectionEl.children.length).toBe(1);
-      expect(sectionEl.children[0]).toBe(divInfoEl);
-      expect(divInfoEl.children.length).toBe(3);
-      expect(divInfoEl.children[0]).toBe(divInfoItemOneEl);
-      expect(divInfoEl.children[1]).toBe(divInfoItemTwoEl);
-      expect(divInfoEl.children[2]).toBe(divInfoItemThreeEl);
-    });
+        let sectionDe = fixture.debugElement.query(By.css('section'));
+        let sectionEl = sectionDe.nativeElement;
+        let divOriginDestinationInfosDe = fixture.debugElement.query(By.css('#origin-destination-infos'));
+        let divOriginDestinationInfosEl = divOriginDestinationInfosDe.nativeElement;
+        let divCabinDe = fixture.debugElement.query(By.css('#cabin'));
+        let divCabinEl = divCabinDe.nativeElement;
+        let divFlightFootprintInfosDe = fixture.debugElement.query(By.css('#flight-footprint-infos'));
+        let divFlightFootprintInfosEl = divFlightFootprintInfosDe.nativeElement;
 
-    it('the first div.info-item should contain p, div.arrow-center and another p in this order', () => {
-      component.flightInfosInput = flightFormDummy["value"];
-      fixture.detectChanges();
-      let divInfoItemDe = fixture.debugElement.queryAll(By.css('div.info-item'));
-      let divInfoItemOneEl = divInfoItemDe[0].nativeElement;
-      
-      expect(divInfoItemOneEl.children.length).toBe(3);
-      expect(divInfoItemOneEl.children[0].localName).toBe('p');
-      expect(divInfoItemOneEl.children[1].localName).toBe('div');
-      expect(divInfoItemOneEl.children[1]).toHaveClass('arrow-center');
-      expect(divInfoItemOneEl.children[2].localName).toBe('p');
+        expect(sectionEl.children.length).toBe(3);
+        expect(sectionEl.children[0]).toBe(divOriginDestinationInfosEl);
+        expect(sectionEl.children[1]).toBe(divCabinEl);
+        expect(sectionEl.children[2]).toBe(divFlightFootprintInfosEl);
+      });
 
-    });
+      describe('div#origin-destination-infos', () => {
 
-    it('first div.info-item first p should render information about the origin of the flight', () => {
-      component.flightInfosInput = flightFormDummy["value"];
-      fixture.detectChanges();
-      let divInfoItemDe = fixture.debugElement.queryAll(By.css('div.info-item'));
-      let divInfoItemOneEl = divInfoItemDe[0].nativeElement;
+        it('should contain a p, a div and a p in this order', () => {
+          component.flightFootprintObject = flightFootprintObjectDummy;
+          fixture.detectChanges();
 
-      let firstP = divInfoItemOneEl.children[0];
-      expect(firstP.children.length).toBe(2);
-      expect(firstP.children[0].localName).toBe('span');
-      expect(firstP.children[0].innerText).toBe('From');
-      expect(firstP.children[1].localName).toBe('span');
-      expect(firstP.children[1].innerText).toBe(`${component.flightInfosInput.origin.city}, ${component.flightInfosInput.origin.name} (${component.flightInfosInput.origin.code})`);
-      
-    });
+          let divOriginDestinationInfosDe = fixture.debugElement.query(By.css('#origin-destination-infos'));
+          let divOriginDestinationInfosEl = divOriginDestinationInfosDe.nativeElement;
+          let pOriginInfosDe = fixture.debugElement.query(By.css('#origin-infos'));
+          let pOriginInfosEl = pOriginInfosDe.nativeElement;
+          let divArrowIconDe = fixture.debugElement.query(By.css('#arrow-icon'));
+          let divArrowIconEl = divArrowIconDe.nativeElement;
+          let pDestinationInfosDe = fixture.debugElement.query(By.css('#destination-infos'));
+          let pDestinationInfosEl = pDestinationInfosDe.nativeElement;
 
-    it('first div.info-item second p should render information about the arrival of the flight', () => {
-      component.flightInfosInput = flightFormDummy["value"];
-      fixture.detectChanges();
-      let divInfoItemDe = fixture.debugElement.queryAll(By.css('div.info-item'));
-      let divInfoItemOneEl = divInfoItemDe[0].nativeElement;
+          expect(divOriginDestinationInfosEl.children.length).toBe(3);
+          expect(divOriginDestinationInfosEl.children[0]).toBe(pOriginInfosEl);
+          expect(divOriginDestinationInfosEl.children[1]).toBe(divArrowIconEl);
+          expect(divOriginDestinationInfosEl.children[2]).toBe(pDestinationInfosEl);
 
-      let secondP = divInfoItemOneEl.children[2];
-      expect(secondP.children.length).toBe(2);
-      expect(secondP.children[0].localName).toBe('span');
-      expect(secondP.children[0].innerText).toBe('To');
-      expect(secondP.children[1].localName).toBe('span');
-      expect(secondP.children[1].innerText).toBe(`${component.flightInfosInput.destination.city}, ${component.flightInfosInput.destination.name} (${component.flightInfosInput.destination.code})`);
-    });
+        });
 
-    it('second div.info-item should contain p.text-center which should render cabin class flight infos', () => {
-      component.flightInfosInput = flightFormDummy["value"];
-      fixture.detectChanges();
-      let divInfoItemDe = fixture.debugElement.queryAll(By.css('div.info-item'));
-      let divInfoItemTwoEl = divInfoItemDe[1].nativeElement;
-      let pCabinClass = divInfoItemTwoEl.children[0];
+        it('p#origin-infos should contain two span elements', () => {
+          component.flightFootprintObject = flightFootprintObjectDummy;
+          fixture.detectChanges();
+          let pOriginInfosDe = fixture.debugElement.query(By.css('#origin-infos'));
+          let pOriginInfosEl = pOriginInfosDe.nativeElement;
+          let spanOriginInfosLabelDe = fixture.debugElement.query(By.css('#origin-infos_label'));
+          let spanOriginInfosLabelEl = spanOriginInfosLabelDe.nativeElement;
+          let spanOriginInfosTextDe = fixture.debugElement.query(By.css('#origin-infos_text'));
+          let spanOriginInfosTextEl = spanOriginInfosTextDe.nativeElement;
 
-      expect(divInfoItemTwoEl.children.length).toBe(1);
-      expect(pCabinClass.localName).toBe('p');
-      expect(pCabinClass).toHaveClass('text-center');
-      expect(pCabinClass.children.length).toBe(2);
-      expect(pCabinClass.children[0].localName).toBe('span');
-      expect(pCabinClass.children[0]).toHaveClass('text-semibold');
-      expect(pCabinClass.children[0].innerText).toBe(component.flightInfosInput.cabin_class + " ");
-      expect(pCabinClass.children[1].localName).toBe('span');
-      expect(pCabinClass.children[1].innerText).toBe("class flight");
-    });
+          expect(pOriginInfosEl.children.length).toBe(2);
+          expect(pOriginInfosEl.children[0]).toBe(spanOriginInfosLabelEl);
+          expect(pOriginInfosEl.children[1]).toBe(spanOriginInfosTextEl);
 
-    it('third div.info-item should contain p.text-center.footprint, div.text-center.footprint in this order', () => {
-      component.flightInfosInput = flightFormDummy["value"];
-      fixture.detectChanges();
-      let divInfoItemDe = fixture.debugElement.queryAll(By.css('div.info-item'));
-      let divInfoItemThreeEl = divInfoItemDe[2].nativeElement;
+          expect(spanOriginInfosLabelEl.innerText).toEqual('From')
+          expect(spanOriginInfosTextEl.innerText).toEqual(
+            `${flightFootprintObjectDummy[1]["origin"]["city"]}, ${flightFootprintObjectDummy[1]["origin"]["country"]}, ${flightFootprintObjectDummy[1]["origin"]["name"]} (${flightFootprintObjectDummy[1]["origin"]["code"]})`
+          );
+        });
 
-      expect(divInfoItemThreeEl.children.length).toBe(2);
-      expect(divInfoItemThreeEl.children[0].localName).toBe('p');
-      expect(divInfoItemThreeEl.children[0]).toHaveClass('text-center');
-      expect(divInfoItemThreeEl.children[0]).toHaveClass('footprint');
-      expect(divInfoItemThreeEl.children[1].localName).toBe('div');
-      expect(divInfoItemThreeEl.children[1]).toHaveClass('text-center');
-      expect(divInfoItemThreeEl.children[1]).toHaveClass('footprint');
-    });
+        it('div#arrow-icon should contain a i element', () => {
+          component.flightFootprintObject = flightFootprintObjectDummy;
+          fixture.detectChanges();
+          let divArrowIconDe = fixture.debugElement.query(By.css('#arrow-icon'));
+          let divArrowIconEl = divArrowIconDe.nativeElement;
+          expect(divArrowIconEl.children.length).toBe(1);
+          expect(divArrowIconEl.children[0].localName).toBe('i');
+        });
 
-    it('third div.info-item p.text-center.footprint should render singleTicketFootprint value', () => {
-      component.flightInfosInput = flightFormDummy["value"];
-      component.singleTicketFootprint = 2;
-      fixture.detectChanges();
-      let divInfoItemDe = fixture.debugElement.queryAll(By.css('div.info-item'));
-      let divInfoItemThreeEl = divInfoItemDe[2].nativeElement;
+        it('p#destination-infos should contain two span elements', () => {
+          component.flightFootprintObject = flightFootprintObjectDummy;
+          fixture.detectChanges();
+          let pDestinationInfosDe = fixture.debugElement.query(By.css('#destination-infos'));
+          let pDestinationInfosEl = pDestinationInfosDe.nativeElement;
+          let spanDestinationInfosLabelDe = fixture.debugElement.query(By.css('#destination-infos_label'));
+          let spanDestinationInfosLabelEl = spanDestinationInfosLabelDe.nativeElement;
+          let spanDestinationInfosTextDe = fixture.debugElement.query(By.css('#destination-infos_text'));
+          let spanDestinationInfosTextEl = spanDestinationInfosTextDe.nativeElement;
 
-      let pSingTicket = divInfoItemThreeEl.children[0];
-      expect(pSingTicket.children.length).toBe(2);
-      expect(pSingTicket.children[0].localName).toBe('span');
-      expect(pSingTicket.children[0]).toHaveClass('text-semibold');
-      expect(pSingTicket.children[0].innerText).toBe(`${component.singleTicketFootprint} tonnes CO2e `);
-      expect(pSingTicket.children[1].localName).toBe('span');
-      expect(pSingTicket.children[1].innerText).toBe('per ticket');
-    });
+          expect(pDestinationInfosEl.children.length).toBe(2);
+          expect(pDestinationInfosEl.children[0]).toBe(spanDestinationInfosLabelEl);
+          expect(pDestinationInfosEl.children[1]).toBe(spanDestinationInfosTextEl);
 
-    it('third div.info-item div.text-center.footprint should render the number of tickets and totalTicketsFootprint value', () => {
-      component.flightInfosInput = flightFormDummy["value"];
-      component.totalTicketsFootprint = 4;
-      fixture.detectChanges();
-      let divInfoItemDe = fixture.debugElement.queryAll(By.css('div.info-item'));
-      let divInfoItemThreeEl = divInfoItemDe[2].nativeElement;
-      
-      let divTotalTicket = divInfoItemThreeEl.children[1];
-      expect(divTotalTicket.children.length).toBe(2);
-      expect(divTotalTicket.children[0].localName).toBe('p');
-      expect(divTotalTicket.children[0]).toHaveClass('text-semibold');
-      expect(divTotalTicket.children[0].innerText).toBe(`Total (${component.flightInfosInput.tickets} tickets)`);
-      expect(divTotalTicket.children[1].innerText).toBe(`${component.totalTicketsFootprint} tonnes CO2e`);
+          expect(spanDestinationInfosLabelEl.innerText).toEqual('To')
+          expect(spanDestinationInfosTextEl.innerText).toEqual(
+            `${flightFootprintObjectDummy[1]["destination"]["city"]}, ${flightFootprintObjectDummy[1]["destination"]["country"]}, ${flightFootprintObjectDummy[1]["destination"]["name"]} (${flightFootprintObjectDummy[1]["destination"]["code"]})`
+          );
+
+        });
+
+      });
+
+      describe('div#cabin', () => {
+
+        it('should contain a p element', () => {
+          component.flightFootprintObject = flightFootprintObjectDummy;
+          fixture.detectChanges();
+          let divCabinDe = fixture.debugElement.query(By.css('#cabin'));
+          let divCabinEl = divCabinDe.nativeElement;
+          let pCabinDe = fixture.debugElement.query(By.css('#cabin-p'));
+          let pCabinEl = pCabinDe.nativeElement;
+
+          expect(divCabinEl.children.length).toBe(1);
+          expect(divCabinEl.children[0]).toBe(pCabinEl);
+        });
+
+        it('p#cabin-p should contain two span elements', () => {
+          component.flightFootprintObject = flightFootprintObjectDummy;
+          fixture.detectChanges();
+
+          let pCabinDe = fixture.debugElement.query(By.css('#cabin-p'));
+          let pCabinEl = pCabinDe.nativeElement;
+          let spanCabinPTextDe = fixture.debugElement.query(By.css('#cabin-p_text'));
+          let spanCabinPTextEl = spanCabinPTextDe.nativeElement;
+          let spanCabinPLabelDe = fixture.debugElement.query(By.css('#cabin-p_label'));
+          let spanCabinPLabelEl = spanCabinPLabelDe.nativeElement;
+
+          expect(pCabinEl.children.length).toBe(2);
+          expect(pCabinEl.children[0]).toBe(spanCabinPTextEl);
+          expect(pCabinEl.children[1]).toBe(spanCabinPLabelEl);
+
+          expect(spanCabinPTextEl.innerText).toEqual(`${flightFootprintObjectDummy[1]["cabin_class"]} `);
+          expect(spanCabinPLabelEl.innerText).toEqual('class flight');
+
+        });
+
+      });
+
+      describe('div#flight-footprint-infos', () => {
+
+        it('should contain a p element and a div element in this order', () => {
+          component.flightFootprintObject = flightFootprintObjectDummy;
+          fixture.detectChanges();
+
+          let divFlightFootprintInfosDe = fixture.debugElement.query(By.css('#flight-footprint-infos'));
+          let divFlightFootprintInfosEl = divFlightFootprintInfosDe.nativeElement;
+          let pFlightFootprintSingleDe = fixture.debugElement.query(By.css('#flight-footprint-single'));
+          let pFlightFootprintSingleEl = pFlightFootprintSingleDe.nativeElement;
+          let divFlightFootprintNTicketsDe = fixture.debugElement.query(By.css('#flight-footprint-ntickets'));
+          let divFlightFootprintNTicketsEl = divFlightFootprintNTicketsDe.nativeElement;
+
+          expect(divFlightFootprintInfosEl.children.length).toBe(2);
+          expect(divFlightFootprintInfosEl.children[0]).toBe(pFlightFootprintSingleEl);
+          expect(divFlightFootprintInfosEl.children[1]).toBe(divFlightFootprintNTicketsEl);
+        });
+
+        it('p#flight-footprint-single should contain two span elements', () => {
+          component.flightFootprintObject = flightFootprintObjectDummy;
+          fixture.detectChanges();
+          let pFlightFootprintSingleDe = fixture.debugElement.query(By.css('#flight-footprint-single'));
+          let pFlightFootprintSingleEl = pFlightFootprintSingleDe.nativeElement;
+          let spanFlightFootprintSingleTextDe = fixture.debugElement.query(By.css('#flight-footprint-single_text'));
+          let spanFlightFootprintSingleTextEl = spanFlightFootprintSingleTextDe.nativeElement;
+          let spanFlightFootprintSingleLabelDe = fixture.debugElement.query(By.css('#flight-footprint-single_label'));
+          let spanFlightFootprintSingleLabelEl = spanFlightFootprintSingleLabelDe.nativeElement;
+
+          expect(pFlightFootprintSingleEl.children.length).toBe(2);
+          expect(pFlightFootprintSingleEl.children[0]).toBe(spanFlightFootprintSingleTextEl);
+          expect(spanFlightFootprintSingleTextEl.innerText).toEqual(`${flightFootprintObjectDummy[0][0]} tonnes CO2e `);
+          expect(pFlightFootprintSingleEl.children[1]).toBe(spanFlightFootprintSingleLabelEl)
+          expect(spanFlightFootprintSingleLabelEl.innerText).toBe('per ticket');
+        });
+
+        it('div#flight-footprint-ntickets should contain two p elements', () => {
+          component.flightFootprintObject = flightFootprintObjectDummy;
+          fixture.detectChanges();
+          let divFlightFootprintNTicketsDe = fixture.debugElement.query(By.css('#flight-footprint-ntickets'));
+          let divFlightFootprintNTicketsEl = divFlightFootprintNTicketsDe.nativeElement;
+          let pFlightFootprintNTicketsLabelDe = fixture.debugElement.query(By.css('#flight-footprint-ntickets_label'));
+          let pFlightFootprintNTicketsLabelEl = pFlightFootprintNTicketsLabelDe.nativeElement;
+          let pFlightFootprintNTicketsTextDe = fixture.debugElement.query(By.css('#flight-footprint-ntickets_text'));
+          let pFlightFootprintNTicketsTextEl = pFlightFootprintNTicketsTextDe.nativeElement;
+
+          expect(divFlightFootprintNTicketsEl.children.length).toBe(2);
+          expect(divFlightFootprintNTicketsEl.children[0]).toBe(pFlightFootprintNTicketsLabelEl);
+          expect(pFlightFootprintNTicketsLabelEl.innerText).toEqual(`Total (${flightFootprintObjectDummy[1]["tickets"]} tickets)`)
+          expect(divFlightFootprintNTicketsEl.children[1]).toBe(pFlightFootprintNTicketsTextEl);
+          expect(pFlightFootprintNTicketsTextEl.innerText).toEqual(`${flightFootprintObjectDummy[0][1]} tonnes CO2e`)
+
+        });
+
+      });
 
     });
 

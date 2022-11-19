@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
-import { Observable} from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, map, retry } from 'rxjs/operators';
 
 import { Airport } from '../models/airport.model';
 import { Footprint } from '../models/footprint.model';
@@ -18,11 +18,14 @@ export class FootprintService {
   constructor(private http: HttpClient) { }
 
   getAirportsList(): Observable<Airport[]> {
-    return this.http.get<Airport[]>('../assets/airports.json');
-  }
+    let airports = this.http.get<Airport[]>('../assets/airports.json').pipe(
+      retry(2),
+      catchError(this.handleError<Airport[]>('getAirportList'))
+    );
+    return airports;
+  };
 
-  //gets footprint
-  getFootprint(flightInfos: FormGroup["value"]) {
+  getFootprint(flightInfos: FormGroup["value"]) : Observable<number[]> {
     
     const httpHeaders = new HttpHeaders({
       'Authorization': 'Basic ' + btoa(this.api_key)
@@ -36,8 +39,19 @@ export class FootprintService {
       }
     })
     
-    return this.http.get<Footprint>('https://api.goclimate.com/v1/flight_footprint',  {headers: httpHeaders, params: httpParams}).pipe(
-      map((obj) =>  obj.footprint)
+    let flightFootprint = this.http.get<Footprint>('https://api.goclimate.com/v1/flight_footprint',  {headers: httpHeaders, params: httpParams}).pipe(
+      retry(3),
+      map((obj) => [obj.footprint/1000, obj.footprint/1000 * flightInfos.tickets]),
+      catchError(this.handleError<number[]>('getFootprint'))
     )
-  }
+    return flightFootprint
+  };
+
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(error);
+      console.log(`${operation} failed: ${error.message}.`);
+      return of(result as T)
+    }
+  };
 }

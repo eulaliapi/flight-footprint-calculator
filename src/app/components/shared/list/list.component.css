@@ -1,0 +1,19 @@
+.list-group {
+  font-size: 0.875rem;
+  z-index: 100;
+  max-height: 6.5rem;
+  overflow-y: auto;
+}
+
+.list-group-item {
+  cursor: pointer;
+}
+
+.list-group-item:hover {
+  font-weight: bold;
+}
+
+
+.no-airport {
+  pointer-events: none;
+}

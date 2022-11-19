@@ -45,10 +45,10 @@ describe('FootprintService', () => {
     done();
   });
 
-  it('getFootprint() should return Footprint object', (done: DoneFn) => {
+  it('getFootprint() should return array of footprint', (done: DoneFn) => {
     footprintService.getFootprint(flightFormDummy["value"]).subscribe(data => {
       expect(data).toBeDefined();
-      expect(data).toEqual(footprintDummy["footprint"])
+      expect(data).toEqual([(footprintDummy["footprint"]/1000), (footprintDummy["footprint"]/1000 * flightFormDummy["value"].tickets)])
     });
 
     const request = httpTestingController.expectOne(

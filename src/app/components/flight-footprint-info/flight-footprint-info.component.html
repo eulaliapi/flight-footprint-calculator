@@ -1,57 +1,57 @@
 <!--details-->
-<section class="column">
+<section>
+    <!--  my-2 mx-auto container -->
+    <ng-template *ngIf="flightFootprintObject; then showflightInfos else showpresentationCard"></ng-template> 
+</section>
 
     <!--presentation card-->
-    <div *ngIf="!flightInfosInput" class="info">
-        <div class="card-item">
-          <p class="block-text">Enter the details of the flight and find out its emissions.</p>
-        </div>
-    </div>
+    <ng-template #showpresentationCard>
+          <p class="text-center text-success" id="show-presentation-card_p">Enter the details of the flight and find out its emissions.</p>
+    </ng-template>
 
     <!--details container-->
-    <div *ngIf="flightInfosInput" class="info">
+    <ng-template #showflightInfos>
         <!--departure and arrival-->
-        <div class="info-item">
+        <div class="text-center" id="origin-destination-infos">
             <!--departure-->
-            <p>
-                <span class="block-text">From</span>
-                <span class="block-text text-semibold">{{flightInfosInput.origin.city}}, {{flightInfosInput.origin.name}} ({{flightInfosInput.origin.code}})</span>
+            <p id="origin-infos">
+                <span class="text-success" id="origin-infos_label">From</span>
+                <span class="text-success fw-semibold ms-1" id="origin-infos_text">{{flightFootprintObject?.[1]["origin"]["city"]}}, {{flightFootprintObject?.[1]["origin"]["country"]}}, {{flightFootprintObject?.[1]["origin"]["name"]}} ({{flightFootprintObject?.[1]["origin"]["code"]}})</span>
             </p>
             <!--arrow icon-->
-            <div class="arrow-center">
+            <div class="text-center text-success" id="arrow-icon">
                 <i class="bi bi-arrow-right text-semibold"></i>
             </div>
             <!--arrival-->
-            <p>
-                <span class="block-text">To</span>
-                <span class="block-text text-semibold">{{flightInfosInput.destination.city}}, {{flightInfosInput.destination.name}} ({{flightInfosInput.destination.code}})</span>
+            <p id="destination-infos">
+                <span class="text-success" id="destination-infos_label">To</span>
+                <span class="text-success fw-semibold ms-1" id="destination-infos_text">{{flightFootprintObject?.[1]["destination"]["city"]}}, {{flightFootprintObject?.[1]["destination"]["country"]}}, {{flightFootprintObject?.[1]["destination"]["name"]}} ({{flightFootprintObject?.[1]["destination"]["code"]}})</span>
             </p>
         </div>
 
         <!--cabin-->
-        <div class="info-item">
-            <p class="text-center">
-                <span class="text-semibold">{{flightInfosInput.cabin_class}} </span>
-                <span>class flight</span>
+        <div class="text-center" id="cabin">
+            <p id="cabin-p">
+                <span class="text-success fw-semibold ms-1" id="cabin-p_text">{{flightFootprintObject?.[1]["cabin_class"]}} </span>
+                <span class="text-success" id="cabin-p_label">class flight</span>
             </p>
         </div>
 
         <!--footprint info-->
-        <div class="info-item">
+        <div class="text-center" id="flight-footprint-infos">
 
             <!--single ticket-->
-            <p class="text-center footprint">
-                <span class="text-semibold">{{singleTicketFootprint}} tonnes CO2e </span>
-                <span>per ticket</span>
+            <p id="flight-footprint-single">
+                <span class="text-success fw-semibold ms-1" id="flight-footprint-single_text"> {{flightFootprintObject?.[0]?.[0] | number:'0.0-1'}} tonnes CO2e </span>
+                <span class="text-success" id="flight-footprint-single_label">per ticket</span>
             </p>
 
             <!-- n tickets -->
-            <div class="text-center footprint">
-                <p class="text-semibold">Total ({{flightInfosInput.tickets}} tickets)</p>
-                <p>{{totalTicketsFootprint}} tonnes CO2e</p>
+            <div class="text-center" id="flight-footprint-ntickets">
+                <p class="text-success" id="flight-footprint-ntickets_label">Total ({{flightFootprintObject?.[1]["tickets"]}} tickets)</p>
+                <p class="text-success fw-semibold ms-1" id="flight-footprint-ntickets_text">{{flightFootprintObject?.[0]?.[1] | number:'0.0-1'}} tonnes CO2e</p>
             </div>
 
         </div>
 
-    </div>
-</section>
+    </ng-template>

@@ -1,60 +1,67 @@
  <!--form-->
- <section class="column">
-  <form class="form" [formGroup]="flightForm" (ngSubmit)="onSubmit()">
+ <section id="form_section">
+
+  <form class="border border-success rounded" id="form_form" [formGroup]="flightForm" (ngSubmit)="onSubmit()">
 
     <!--origin-->
-    <div class="field">
-      <label for="origin" class="form-label">From</label>
-      <input class="form-input" type="text" name="origin" id="origin" formControlName = "origin"
-      #originInput 
-      (input)="onOriginInput(originInput.value)" required>
-      <p *ngIf="flightForm.get('origin')?.invalid && flightForm.get('origin')?.dirty && !showOriginMatch" class="invalid-input">Invalid input. Please select an option from the list.</p>
+    <div class="m-2 m-md-4 position-relative" id="form_origin">
 
-      <ul *ngIf = "showOriginMatch"  class="list origin" id="origin-list">
-        <li *ngFor="let matchingOrigin of matchingOriginAirports" class="list-item"
-        #selectedOrigin
-        (click)="onSelectedOrigin(selectedOrigin, matchingOrigin)">
-          {{matchingOrigin.city}}, {{matchingOrigin.name}} ({{matchingOrigin.code}})
-        </li>
-        <li *ngIf="noResultsOrigin">No results found :(</li>
-      </ul>
+      <app-label for="origin" text="From"></app-label>
+      <app-input type="text" name="origin"
+      formControlName="origin"
+      ngDefaultControl
+      [value]="selectedOriginAirport"
+      (emitInput)="onFocus($event)"></app-input>
+
+      <app-list *ngIf="showOriginList" text="No results found :(" id="origin"
+      [listOfAirports]="matchingOriginAirports" 
+      (selectedAirport)="setAirport($event)">
+      </app-list>
+      
+      <app-invalid-input 
+      *ngIf="flightForm.get('origin')?.dirty && flightForm.get('origin')?.invalid"
+      text="Invalid input. Please select an option from the list.">
+      </app-invalid-input>
+
     </div>
 
     <!--destination-->
-    <div class="field">
-      <label for="destination" class="form-label">To</label>
-      <input class="form-input" type="text" name="destination" id="destination" formControlName = "destination"
-      #destinationInput
-      (input)="onDestinationInput(destinationInput.value)" 
-      required>
-      <p *ngIf="flightForm.get('destination')?.invalid && flightForm.get('destination')?.dirty && !showDestinationMatch" class="invalid-input">Invalid input. Please select an option from the list.</p>
+    <div class="m-2 m-md-4 position-relative" id="form_destination">
 
-      <ul *ngIf = "showDestinationMatch"  class="list destination" id="destination-list">
-        <li *ngFor="let matchingDestination of matchingDestinationAirports" class="list-item"
-        #selectedDestination
-        (click)="onSelectedDestination(selectedDestination, matchingDestination)">
-          {{matchingDestination.city}}, {{matchingDestination.name}} ({{matchingDestination.code}})
-        </li>
-        <li *ngIf="noResultsDestination">No results found :(</li>
-      </ul>
+      <app-label for="destination" text="To"></app-label>
+      <app-input type="text" name="destination"
+      formControlName="destination"
+      ngDefaultControl
+      [value]="selectedDestinationAirport" 
+      (emitInput)="onFocus($event)"></app-input>
+
+      <app-list *ngIf="showDestinationList" text="No results found :(" id="destination"
+      [listOfAirports]="matchingDestinationAirports" 
+      (selectedAirport)="setAirport($event)">
+      </app-list>
+
+      <app-invalid-input 
+      *ngIf="flightForm.get('destination')?.dirty && flightForm.get('destination')?.invalid"
+      text="Invalid input. Please select an option from the list.">
+      </app-invalid-input>
+
     </div>
 
     <!--cabin class-->
-    <div class="field">
-      <label for="cabin_class" class="form-label">Cabin class</label>
-      <select class="form-input" name="cabin_class" id="cabin_class" formControlName = "cabin_class" required>
-        <option *ngFor="let cabin_class of cabin_class_options" [value]="cabin_class">{{cabin_class}}</option>
-      </select>
+    <div class="m-2 m-md-4" id="form_cabin">
+      <app-label for="cabin_class" text="Cabin class"></app-label>
+      <app-select formControlName="cabin_class" ngDefaultControl [options]="cabin_class_options"></app-select>
     </div>
 
     <!--tickets-->
-    <div class="field">
-      <label for="tickets" class="form-label">N° tickets</label>
-      <input class="form-input" type="number" name="tickets" id="tickets" formControlName = "tickets" min="1" required>
+    <div class="m-2 m-md-4" id="form_tickets">
+      <app-label for="tickets" text="N° tickets"></app-label>
+      <app-input type="number" min="1" formControlName="tickets" ngDefaultControl></app-input>
     </div>
+
     <!--submit button-->
-    <div class="button-container">
-      <button class="button" type="submit" [disabled]="!flightForm.valid">Go</button>
+    <div class="my-2 d-grid col-6 mx-auto my-md-4" id="form_submit">
+      <app-button type="submit" text="Go" [disabled]="flightForm.invalid"></app-button>
     </div>
 
   </form>

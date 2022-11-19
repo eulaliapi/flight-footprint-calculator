@@ -1,5 +1,12 @@
 <app-top-bar></app-top-bar>
 
-<app-main-container></app-main-container>
+<main class="container my-md-2">
+
+    <div class="row">
+        <app-flight-footprint-form  [airports]="airports" (newForm)="getForm($event)" class="col-12 col-md-6 my-4 container"></app-flight-footprint-form>
+        <app-flight-footprint-info [flightFootprintObject]="flightFootprintObject" class="col-12 col-md-6 my-2 my-md-auto"></app-flight-footprint-info>
+    </div>
+
+</main>
 
 <app-footer></app-footer>

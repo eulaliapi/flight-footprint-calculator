@@ -1,0 +1,11 @@
+<ul class="list-group position-absolute w-100" [id]="id">
+
+    <li *ngFor="let airport of listOfAirports" class="list-group-item text-success border-success"
+    (click)="onClick($event, airport)">
+        {{airport.city}}, {{airport.name}}, {{airport.country}} ({{airport.code}})
+    </li>
+
+    <li *ngIf="listOfAirports?.length == 0" class="list-group-item text-success border-success no-airport" id="no-airports">
+        {{text}}
+    </li>
+</ul>

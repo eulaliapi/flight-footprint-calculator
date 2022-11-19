@@ -1,9 +1,9 @@
-import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { FootprintService } from 'src/app/services/footprint.service';
+import { Component, OnInit, Output, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { validateAirport } from 'src/app/directives/validate-airport.directive';
 
 import { Airport } from 'src/app/models/airport.model';
+import { filter, map, tap } from 'rxjs';
 
 @Component({
   selector: 'app-flight-footprint-form',
@@ -12,114 +12,72 @@ import { Airport } from 'src/app/models/airport.model';
 })
 export class FlightFootprintFormComponent implements OnInit {
 
-  @ViewChild('originInput') originInput!: ElementRef;
-  @ViewChild('destinationInput') destinationInput!: ElementRef;
-
   @Output() newForm = new EventEmitter<FormGroup["value"]>();
+  @Input() airports: Airport[] = [];
 
-  //array of airports
-  public airports$: Airport[] = [];
+  flightForm!: FormGroup;
+  cabin_class_options: string[] = ['', 'economy', 'premium_economy', 'business', 'first'];
 
-  //arrays of airports that match user's text input
   matchingOriginAirports: Airport[] = [];
   matchingDestinationAirports: Airport[] = [];
 
-  noResultsOrigin: boolean = false;
-  noResultsDestination: boolean = false;
+  showOriginList: boolean = false;
+  showDestinationList: boolean = false;
 
-  //shows those Airport objects that match what the user has entered in the input field
-  showOriginMatch: boolean = false;
-  showDestinationMatch: boolean = false;
+  selectedOriginAirport: string = '';
+  selectedDestinationAirport: string = '';
 
-  //cabin class options
-  cabin_class_options: string[] = ['economy', 'premium_economy', 'business', 'first'];
+  constructor(private fb: FormBuilder) {};
 
-  flightForm = new FormGroup({
-    origin: new FormControl('', validateAirport),
-    destination: new FormControl('', validateAirport),
-    cabin_class: new FormControl(''),
-    tickets: new FormControl('')
-  });
+  ngOnInit() {
+    this.flightForm = this.fb.group({
+      origin: ['', [Validators.required, validateAirport]],
+      destination: ['', [Validators.required, validateAirport]],
+      cabin_class: ['', [Validators.required, Validators.minLength(3)]],
+      tickets: ['', [Validators.required, Validators.min(1)]]
+    });
+  };
 
-  constructor(private footprintService: FootprintService ) { }
+  onFocus(e: any) {
+    this.getListOfAirports(e.target.name);
+  };
 
-  ngOnInit(): void {
-    this.loadAirportsList()
-  }
+  getListOfAirports(formControlName: string): void {
+    this.flightForm.get(formControlName)?.valueChanges.pipe(
+      tap(() => {this.showOriginList = false; this.showDestinationList = false;}),
+      filter((val => typeof val == 'string')),
+      map((val) => val.charAt(0).toUpperCase() + val.substring(1).toLowerCase()),
+      filter(val => val.length > 1)
+    )
+    .subscribe(val => {
+      if(formControlName == 'origin') {
+        this.matchingOriginAirports = this.filterAirports(val)
+        this.showOriginList = true;
+      } else {
+        this.matchingDestinationAirports = this.filterAirports(val)
+        this.showDestinationList = true;
+      }
+    });
+  };
 
-  //transforms the text inserted by the user in 'Abcd' format
-  transformInput(input: string){
-    let value = input.toLowerCase();
-    return value.charAt(0).toUpperCase() + value.substring(1);
-  }
+  filterAirports(val: string) : Airport[] {
+    return this.airports.filter(
+      obj => obj.city.startsWith(val) || obj.name.startsWith(val) || obj.country.startsWith(val)
+    );
+  };
 
-  //gets the list of airports and stores it in a variable
-  loadAirportsList(): void {
-    this.footprintService.getAirportsList().subscribe( res => this.airports$ = res);
-  }
-
-  //filters airports$ to match the value entered by the user in origin input
-  onOriginInput(text: string): void {
-
-    if(text.length > 1) {
-      let search = this.transformInput(text);
-      this.matchingOriginAirports = this.airports$.filter( obj => 
-        obj.city.startsWith(search) || obj.name.startsWith(search) || obj.country.startsWith(search)
-        || obj.city.includes(text) || obj.name.includes(text) || obj.country.includes(text)
-      );
-      this.showOriginMatch = true;
-
-      //if no Airport matches what has been entered in the input, the list shows 'No results found :('
-        if(this.matchingOriginAirports.length === 0){
-          this.noResultsOrigin = true;
-        }
-
+  setAirport(event: [any, Airport]){
+    if(event[0].target.parentElement.id === 'origin') {
+       this.flightForm.patchValue({origin: event[1]})
+       this.selectedOriginAirport = `${event[1].city}, ${event[1].name}, ${event[1].country} (${event[1].code})`;
     } else {
-      this.showOriginMatch = false;
-    }
+      this.flightForm.patchValue({destination: event[1]})
+      this.selectedDestinationAirport = `${event[1].city}, ${event[1].name}, ${event[1].country} (${event[1].code})`;
+    };
+  };
 
-  }
-
-  //filters airports$ to match the value entered in destination input
-  onDestinationInput(text: string): void {
-
-    if(text.length > 1) {
-      let search = this.transformInput(text);
-      this.matchingDestinationAirports = this.airports$.filter( obj => 
-        obj.city.startsWith(search) || obj.name.startsWith(search) || obj.country.startsWith(search)
-        || obj.city.includes(text) || obj.name.includes(text) || obj.country.includes(text)
-      );
-      this.showDestinationMatch = true;
-
-      //if no Airport matches what has been entered in the input, the list shows 'No results found :('
-        if(this.matchingDestinationAirports.length === 0){
-          this.noResultsDestination = true;
-        }
-
-    } else {
-      this.showDestinationMatch = false;
-    }
-
-  }
-
-  //when the user selects a li, its text is displayed in the input and the list disappears
-  onSelectedOrigin(el: HTMLLIElement, airport: Airport){
-    this.flightForm.patchValue({origin: airport});
-    this.originInput.nativeElement.value = el.innerHTML;
-    this.showOriginMatch = false;
-  }
-
-  //when the user selects a li, its text is displayed in the input and the list disappears
-  onSelectedDestination(el: HTMLLIElement, airport: Airport){
-    this.flightForm.patchValue({destination: airport});
-    this.destinationInput.nativeElement.value = el.innerHTML;
-    this.showDestinationMatch = false;
-  }
-
-  //outputs the form to main-container
-  onSubmit() { 
+  onSubmit() {
     this.newForm.emit(this.flightForm.value);
-    this.flightForm.reset();
-  }
+  };
 
 }
